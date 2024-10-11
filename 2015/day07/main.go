@@ -20,7 +20,7 @@ func main() {
     input := string(inputFile[:len(inputFile)-1])
 
     lines := strings.Split(input, "\n")
-    for _, line := range(lines) {
+    for _, line := range lines {
         words := strings.Split(line, " ")
         wires[words[len(words)-1]] = words[:len(words)-2]
     }
@@ -29,11 +29,11 @@ func main() {
     fmt.Printf("Part two: %d\n", partTwo())
 }
 
-func partOne() int{
+func partOne() int {
     return wire("a")
 }
 
-func partTwo() int{
+func partTwo() int {
     value := wire("a")
 
     liveWires = make(map[string]int)

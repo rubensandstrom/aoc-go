@@ -12,18 +12,16 @@ type Coord struct {
 }
 
 func main() {
-    inputFile, err := os.ReadFile("input")
+    input, err := os.ReadFile("input")
     if err != nil {
         log.Fatal(err)
     }
-    input := string(inputFile)
 
     fmt.Printf("Part one: %d\n", partOne(input))
     fmt.Printf("Part two: %d\n", partTwo(input))
-
 }
 
-func partOne(input string) int {
+func partOne(input []byte) int {
     santa := Coord{}
     house := map[Coord] int {}
     house[santa]++
@@ -39,7 +37,7 @@ func partOne(input string) int {
     return len(house)
 }
 
-func partTwo(input string) int {
+func partTwo(input []byte) int {
     santa := Coord{}
     roboSanta := Coord{}
     house := map[Coord] int {}

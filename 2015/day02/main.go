@@ -14,7 +14,8 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    input := string(inputFile[:len(inputFile)-1])
+    input := string(inputFile)
+
     
     fmt.Printf("Part one: %d\n", partOne(input))
     fmt.Printf("Part two: %d\n", partTwo(input))
@@ -30,7 +31,7 @@ func partOne(input string) int {
         box := strings.Split(line, "x")
         if len(box) != 3 {break}
 
-        l, _ := strconv.Atoi(box[0]) 
+        l, _ := strconv.Atoi(box[0])
         w, _ := strconv.Atoi(box[1])
         h, _ := strconv.Atoi(box[2])
 
@@ -53,7 +54,7 @@ func partTwo(input string) int {
         boxString := strings.Split(line, "x")
         if len(boxString) != 3 {break}
 
-        l, _ := strconv.Atoi(boxString[0]) 
+        l, _ := strconv.Atoi(boxString[0])
         w, _ := strconv.Atoi(boxString[1])
         h, _ := strconv.Atoi(boxString[2])
 

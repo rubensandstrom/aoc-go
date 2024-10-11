@@ -91,13 +91,13 @@ func partTwo(input string) int{
             }
 
         } else if words[0] == "toggle" {
-            rc0 := strings.Split(words[1], ",")
-            rc1 := strings.Split(words[3], ",")
+            start := strings.Split(words[1], ",")
+            stop := strings.Split(words[3], ",")
 
-            rowStart, _ := strconv.Atoi(rc0[0])
-            colStart, _ := strconv.Atoi(rc0[1])
-            rowStop, _ := strconv.Atoi(rc1[0])
-            colStop, _ := strconv.Atoi(rc1[1])
+            rowStart, _ := strconv.Atoi(start[0])
+            colStart, _ := strconv.Atoi(start[1])
+            rowStop, _ := strconv.Atoi(stop[0])
+            colStop, _ := strconv.Atoi(stop[1])
 
             turnUpTwo(rowStart, colStart, rowStop, colStop)
         }

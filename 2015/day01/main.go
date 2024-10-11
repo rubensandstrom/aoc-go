@@ -1,22 +1,21 @@
 package main
 
 import (
-    "os"
-    "fmt"
+	"fmt"
+	"os"
 )
 
 func main() {
-    inputFile, err := os.ReadFile("input")
+    input, err := os.ReadFile("input")
     if err != nil {
         fmt.Printf("Couldn't read file\n")
     }
-    input := string(inputFile[:len(inputFile)-1])
 
     fmt.Printf("Part one: %d\n", partOne(input))
     fmt.Printf("Part two: %d\n", partTwo(input))
 }
 
-func partOne(input string) int {
+func partOne(input []byte) int {
     sum := 0
     for i := 0; i < len(input) ; i++ {
         if c := input[i]; c == '(' {
@@ -28,13 +27,13 @@ func partOne(input string) int {
     return sum
 }
 
-func partTwo(input string) int {
+func partTwo(input []byte) int {
     sum := 0
     i:= 0
     for ; sum >= 0 ; i++ {
         if c := input[i]; c == '(' {
             sum++
-        } else if c == ')' {
+        } else {
             sum--
         }
     }

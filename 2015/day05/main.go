@@ -12,7 +12,7 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    input := string(inputFile[:len(inputFile)-1])
+    input := string(inputFile)
 
     fmt.Printf("Part one: %d\n", partOne(input))
     fmt.Printf("Part two: %d\n", partTwo(input))
