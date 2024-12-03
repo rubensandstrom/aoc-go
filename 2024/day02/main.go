@@ -61,7 +61,6 @@ func partTwo(data [][]int) int{
 				sum ++ 
 				break
 			}
-
 		}
 	}
     return sum
