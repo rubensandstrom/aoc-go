@@ -1,10 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
-	"os"
-	"strings"
+	"os"	
+	"aoc/util"
 )
 
 func main() {
@@ -13,25 +14,65 @@ func main() {
     if err != nil {
         log.Fatal(err)
     }
-    input := string(inputFile[:len(inputFile)-1])
+    input := inputFile[:len(inputFile)-1]
 
     fmt.Printf("Part one: %d\n", partOne(input))
     fmt.Printf("Part two: %d\n", partTwo(input))
 }
 
-func partOne(input string) int{
+func partOne(input []byte) int{
     sum := 0
-	rows := strings.Split(input, "\n")
-	cols := []string{}
+	rows := bytes.Split(input, []byte("\n"))
 
-	for col := 0; col < len(rows[0]); col++ {
-		tmp := strings.Builder{}
-		for row := 0; row < len(rows); row++ {
-			tmp.WriteByte(rows[row][col])
+	for _, x := range rows {
+		for y := 0; y <= len(x) - 4; y++ {
+			if string(x[y:y+4]) == "XMAS" {sum++}
+			if string(x[y:y+4]) == "SAMX" {sum++}
 		}
-		cols = append(cols, tmp.String())
 	}
 
+	for _, x := range util.Cols(rows) {
+		for y := 0; y <= len(x) - 4; y++ {
+			if string(x[y:y+4]) == "XMAS" {sum++}
+			if string(x[y:y+4]) == "SAMX" {sum++}
+		}
+	}
+	
+	for _, x := range util.MinorDiagonals(rows) {
+		if len(x) < 4 {continue}
+		for y := 0; y <= len(x) - 4; y++ {
+			if string(x[y:y+4]) == "XMAS" {sum++}
+			if string(x[y:y+4]) == "SAMX" {sum++}
+		}
+	}
+
+	for _, x := range util.MajorDiagonals(rows) {
+		if len(x) < 4 {continue}
+		for y := 0; y <= len(x) - 4; y++ {
+			if string(x[y:y+4]) == "XMAS" {sum++}
+			if string(x[y:y+4]) == "SAMX" {sum++}
+		}
+	}
+
+    return sum
+}
+
+func partTwo(input []byte) int{
+    sum := 0
+
+	rows := bytes.Split(input, []byte("\n"))
+	for _, m := range util.Window(rows, 3, 3) {
+		if m[1][1] == byte('A') {
+			majorDiagStr := string([]byte{m[0][0], m[1][1], m[2][2]})
+			minorDiagStr := string([]byte{m[0][2], m[1][1], m[2][0]})
+
+			if (majorDiagStr == "MAS" || majorDiagStr == "SAM") && (minorDiagStr == "MAS" || minorDiagStr == "SAM") {sum++}
+		}
+	}
+    return sum
+}
+
+/*
 	majorDiags := []string{}
 	minorDiags := []string{}
 	for k := 0; k < len(rows) + len(cols) - 1; k++ {
@@ -59,65 +100,4 @@ func partOne(input string) int{
 			minorDiags = append(minorDiags, diagonal.String())
 		}
 	}
-
-	for _, x := range rows {
-		for y := 0; y <= len(x) - 4; y++ {
-			if x[y:y+4] == "XMAS" {sum++}
-			if x[y:y+4] == "SAMX" {sum++}
-		}
-	}
-
-	for _, x := range cols {
-		for y := 0; y <= len(x) - 4; y++ {
-			if x[y:y+4] == "XMAS" {sum++}
-			if x[y:y+4] == "SAMX" {sum++}
-		}
-	}
-	
-	for _, x := range minorDiags {
-		if len(x) < 4 {continue}
-		for y := 0; y <= len(x) - 4; y++ {
-			if x[y:y+4] == "XMAS" {sum++}
-			if x[y:y+4] == "SAMX" {sum++}
-		}
-	}
-
-	for _, x := range majorDiags {
-		if len(x) < 4 {continue}
-		for y := 0; y <= len(x) - 4; y++ {
-			if x[y:y+4] == "XMAS" {sum++}
-			if x[y:y+4] == "SAMX" {sum++}
-		}
-	}
-
-    return sum
-}
-
-func partTwo(input string) int{
-    sum := 0
-
-	rows := strings.Split(input, "\n")
-	for row := 1; row < len(rows) - 1; row++ {
-		for col := 1; col < len(rows[0]) - 1; col++ {
-			if rows[row][col] == byte('A') {
-				majorDiag := strings.Builder{}
-				majorDiag.WriteByte(rows[row - 1][col - 1])
-				majorDiag.WriteByte(rows[row][col])
-				majorDiag.WriteByte(rows[row + 1][col + 1])
-
-				minorDiag := strings.Builder{}
-				minorDiag.WriteByte(rows[row - 1][col + 1])
-				minorDiag.WriteByte(rows[row][col])
-				minorDiag.WriteByte(rows[row + 1][col - 1])
-
-				majorDiagStr := majorDiag.String()
-				minorDiagStr := minorDiag.String()
-
-
-				if (majorDiagStr == "MAS" || majorDiagStr == "SAM") && (minorDiagStr == "MAS" || minorDiagStr == "SAM") {sum++}
-
-			}
-		}
-	}
-    return sum
-}
+*/
