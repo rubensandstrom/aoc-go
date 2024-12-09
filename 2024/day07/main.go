@@ -99,13 +99,13 @@ func eval2(result, sum int, operands []string, operator int) bool {
 
 	val, _ := strconv.Atoi(operands[0])
 	switch operator {
-	case PLUS: { sum += val }
-	case TIMES: {sum *= val }
-	case CONCAT: {
-		sumStr := strconv.Itoa(sum)
-		sumStr += operands[0]
-		sum, _ = strconv.Atoi(sumStr)
-	}
+		case PLUS: { sum += val }
+		case TIMES: {sum *= val }
+		case CONCAT: {
+			sumStr := strconv.Itoa(sum)
+			sumStr += operands[0]
+			sum, _ = strconv.Atoi(sumStr)
+		}
 	}
 
 	if eval2(result, sum, operands[1:], PLUS) || eval2(result, sum, operands[1:], TIMES) || eval2(result, sum, operands[1:], CONCAT) {
