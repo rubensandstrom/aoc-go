@@ -10,7 +10,9 @@ import (
 type pos struct { row, col int}
 type dir struct { row, col int}
 
-
+var delta = []dir{
+	{0, -1}, {-1, 0}, {0, 1}, {1, 0},
+}
 
 func main() {
 
@@ -32,14 +34,13 @@ func partOne(garden []string) int{
 	for row := 0; row < len(garden); row++ {
 		for col := 0; col < len(garden[0]); col++ {
 			if !visited[pos{row, col}] {
-				area, region := findArea(pos{row, col}, garden)
-				perimiter := findPerimiter(pos{row, col}, garden)
+				area, border, region := findPerimiter(pos{row, col}, garden)
 
 				for key := range region {
 					visited[key] = true
 				}
 
-				sum += area * perimiter
+				sum += area * border
 			}
 		}
 	}
@@ -54,267 +55,111 @@ func partTwo(garden []string) int{
 	for row := 0; row < len(garden); row++ {
 		for col := 0; col < len(garden[0]); col++ {
 			if !visited[pos{row, col}] {
-				area, region := findArea(pos{row, col}, garden)
-				sides := findSides(pos{row, col}, garden)
+				area, border, region := findSides(pos{row, col}, garden)
 
 				for key := range region {
 					visited[key] = true
 				}
 
-				sum += area * sides
+				sum += area * border
 			}
 		}
 	}
-
     return sum
 }
 
-func findArea(p pos, g []string) (area int, visited map[pos]bool ){
-	sum := 0
+func inBounds(p pos, garden []string) bool {
+	return p.row >= 0 && p.row < len(garden) && p.col >= 0 && p.col < len(garden[0])
+}
+
+func findPerimiter(p pos, g []string) (area, perimiter int, visited map[pos]bool){
 
 	plant := g[p.row][p.col]
 	visited = map[pos]bool{}
-
-	toVisit := []pos{}
-	toVisit = append(toVisit, p)
-
-	for len(toVisit) > 0 {
-		tmp := toVisit[len(toVisit) - 1]
-		toVisit = toVisit[:len(toVisit) - 1]
-
-		if tmp.col - 1 >= 0 {
-			if !visited[pos{tmp.row, tmp.col - 1}] && g[tmp.row][tmp.col - 1] == plant {
-				toVisit = append(toVisit, pos{tmp.row, tmp.col - 1})
-				visited[pos{tmp.row, tmp.col - 1}] = true
-			}
-		}
-
-		if tmp.col + 1 < len(g[0]) {
-			if !visited[pos{tmp.row, tmp.col + 1}] && g[tmp.row][tmp.col + 1] == plant {
-				toVisit = append(toVisit, pos{tmp.row, tmp.col + 1})
-				visited[pos{tmp.row, tmp.col + 1}] = true
-			}
-		}
-
-		if tmp.row - 1 >= 0 {
-			if !visited[pos{tmp.row -1, tmp.col}] && g[tmp.row - 1][tmp.col] == plant {
-				toVisit = append(toVisit, pos{tmp.row - 1, tmp.col})
-				visited[pos{tmp.row -1, tmp.col}] = true
-			}
-		}
-
-		if tmp.row + 1 < len(g) {
-			if !visited[pos{tmp.row + 1, tmp.col}] && g[tmp.row + 1][tmp.col] == plant {
-				toVisit = append(toVisit, pos{tmp.row + 1, tmp.col})
-				visited[pos{tmp.row + 1, tmp.col}] = true
-			}
-		}
-		visited[tmp] = true
-		sum++
-	}
-
-	return sum, visited
-}
-
-func findPerimiter(p pos, g []string) (perimiter int) {
-	sum := 0
-
-	plant := g[p.row][p.col]
-	visited := map[pos]bool{}
-
 	toVisit := []pos{p}
 
 	for len(toVisit) > 0 {
-		tmpSum := 0
 		tmp := toVisit[len(toVisit) - 1]
 		toVisit = toVisit[:len(toVisit) - 1]
 
-		if tmp.col - 1 >= 0 {
-			if !visited[pos{tmp.row, tmp.col - 1}] {
-				if g[tmp.row][tmp.col - 1] == plant {
-					toVisit = append(toVisit, pos{tmp.row, tmp.col - 1})
-					visited[pos{tmp.row, tmp.col - 1}] = true
-				} else {
-					tmpSum++
+		for _, d := range delta {
+			neighbor := pos{row: tmp.row + d.row, col: tmp.col + d.col }
+			if inBounds(neighbor, g) && g[neighbor.row][neighbor.col] == plant {
+				if !visited[neighbor]  {
+					toVisit = append(toVisit, neighbor)
+					visited[neighbor] = true
 				}
+			} else {
+				perimiter++
 			}
-		} else {
-			tmpSum++
 		}
-
-		if tmp.col + 1 < len(g[0]) {
-			if !visited[pos{tmp.row, tmp.col + 1}] {
-				if g[tmp.row][tmp.col + 1] == plant {
-					toVisit = append(toVisit, pos{tmp.row, tmp.col + 1})
-					visited[pos{tmp.row, tmp.col + 1}] = true
-				} else {
-					tmpSum ++
-				}
-			}
-		} else {
-			tmpSum++
-		}
-
-		if tmp.row - 1 >= 0 {
-			if !visited[pos{tmp.row -1, tmp.col}] {
-			    if g[tmp.row - 1][tmp.col] == plant {
-					toVisit = append(toVisit, pos{tmp.row - 1, tmp.col})
-					visited[pos{tmp.row -1, tmp.col}] = true
-				} else {
-					tmpSum++
-				}
-			}
-		} else {
-			tmpSum++
-		}
-
-		if tmp.row + 1 < len(g) {
-			if !visited[pos{tmp.row + 1, tmp.col}] {
-				if g[tmp.row + 1][tmp.col] == plant {
-					toVisit = append(toVisit, pos{tmp.row + 1, tmp.col})
-					visited[pos{tmp.row + 1, tmp.col}] = true
-				} else {
-					tmpSum++
-				}
-			}
-		} else {
-			tmpSum++
-		}
-
-		sum += tmpSum
 		visited[tmp] = true
+		area++
 	}
-
-	return sum
+	return
 }
 
-
-func findSides(p pos, g []string) (perimiter int) {
-	sum := 0
+func findSides(p pos, g []string) (area, sides int, visited map[pos]bool) {
 
 	plant := g[p.row][p.col]
-	visited := map[pos]bool{}
-
+	visited = map[pos]bool{}
 	toVisit := []pos{p}
 
-
 	for len(toVisit) > 0 {
-
-		left      := false
-		right     := false
-		up        := false
-		down      := false
-		upLeft    := false
-		upRight   := false
-		downLeft  := false
-		downRight := false
-
 		tmp := toVisit[len(toVisit) - 1]
 		toVisit = toVisit[:len(toVisit) - 1]
 
-		if tmp.col - 1 >= 0 {
-			if !visited[pos{tmp.row, tmp.col - 1}] {
-				if g[tmp.row][tmp.col - 1] == plant {
-					toVisit = append(toVisit, pos{tmp.row, tmp.col - 1})
-					visited[pos{tmp.row, tmp.col - 1}] = true
-				} else {
-					left = true
-				}			
-			}
-		} else {
-			left = true
-		}
-
-		if tmp.col + 1 < len(g[0]) {
-			if !visited[pos{tmp.row, tmp.col + 1}] {
-				if g[tmp.row][tmp.col + 1] == plant {
-					toVisit = append(toVisit, pos{tmp.row, tmp.col + 1})
-					visited[pos{tmp.row, tmp.col + 1}] = true
-				} else {
-					right = true
+		for _, d := range delta {
+			neighbor := pos{row: tmp.row + d.row, col: tmp.col + d.col }
+			if inBounds(neighbor, g) && g[neighbor.row][neighbor.col] == plant {
+				if !visited[neighbor]  {
+					toVisit = append(toVisit, neighbor)
+					visited[neighbor] = true
 				}
-			}
-		} else {
-			right = true
+			} 
 		}
-
-		if tmp.row - 1 >= 0 {
-			if !visited[pos{tmp.row -1, tmp.col}] {
-			    if g[tmp.row - 1][tmp.col] == plant {
-					toVisit = append(toVisit, pos{tmp.row - 1, tmp.col})
-					visited[pos{tmp.row -1, tmp.col}] = true
-				} else {
-					up = true
-				}
-			}
-		} else {
-			up = true
-		}
-
-		if tmp.row + 1 < len(g) {
-			if !visited[pos{tmp.row + 1, tmp.col}] {
-				if g[tmp.row + 1][tmp.col] == plant {
-					toVisit = append(toVisit, pos{tmp.row + 1, tmp.col})
-					visited[pos{tmp.row + 1, tmp.col}] = true
-				} else {
-					down = true
-				}
-			}
-		} else {
-			down = true
-		}
-
 		visited[tmp] = true
+		area++
 
-		if tmp.row - 1 >= 0 && tmp.col - 1 >= 0 {
-			upLeft = g[tmp.row - 1][tmp.col - 1] != plant
-		} else {
-			upLeft = true
+		window := [3][3]bool{}
+
+		for i := -1; i <= 1; i++ {
+			for j := -1; j <= 1; j++ {
+				neighbor := pos{row: tmp.row + i, col: tmp.col + j}
+				window[i + 1][j + 1] = inBounds(neighbor, g) && g[neighbor.row][neighbor.col] == plant
+			}
 		}
 
-		if tmp.row - 1 >= 0 && tmp.col + 1 < len(g[0]) {
-			upRight = g[tmp.row - 1][tmp.col + 1] != plant
-		} else {
-			upRight = true
+		// Inner corners
+		if window[1][0] && window[0][1] && !window[0][0] {
+			sides++
 		}
 
-		if tmp.row + 1 < len(g) && tmp.col - 1 >= 0 {
-			downLeft = g[tmp.row + 1][tmp.col - 1] != plant
-		} else {
-			downLeft = true
+		if window[0][1] && window[1][2] && !window[0][2] {
+			sides++
 		}
 
-		if tmp.row + 1 < len(g) && tmp.col + 1 < len(g[0]) {
-			downRight = g[tmp.row + 1][tmp.col + 1] != plant
-		} else {
-			downRight = true
+		if window[1][2] && window[2][1] && !window[2][2] {
+			sides++
 		}
 
-
-		if !left && !up && upLeft {
-			sum++
+		if window[2][1] && window[1][0] && !window[2][0] {
+			sides++
 		}
 
-		if !up && !right && upRight {
-			sum++
-		}
-
-		if !right && !down && downRight {
-			sum++
-		}
-
-		if !down && !left && downLeft {
-			sum++
-		}
-
-		if left && up && right  && down {
-			sum += 4
-		} else if left && up && right || up && right && down || right && down && left || down && left && up {
-			sum += 2
-		} else if left && up || up && right || right && down || down && left {
-			sum += 1
+		// Outer corners
+		if !window[1][0] && !window[0][1] && !window[1][2]  && !window[2][1] {
+			sides += 4
+		} else if !window[1][0] && !window[0][1] && !window[1][2] || 
+		          !window[0][1] && !window[1][2] && !window[2][1] || 
+		          !window[1][2] && !window[2][1] && !window[1][0] || 
+		          !window[2][1] && !window[1][0] && !window[0][1] {
+			sides += 2
+		} else if !window[1][0] && !window[0][1] || !window[0][1] && !window[1][2] || 
+		          !window[1][2] && !window[2][1] || !window[2][1] && !window[1][0] {
+			sides += 1
 		}
 	}
 
-	return sum
+	return
 }
