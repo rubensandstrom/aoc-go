@@ -22,114 +22,79 @@ func main() {
     fmt.Printf("Part two: %d\n", partTwo(input))
 }
 
-func partOne(input string) int{
-	r, _ := regexp.Compile(`\d+`)
-	sum := 0
+type equation struct {
+	a, b, ans int
+}
 
-	
+func partOne(input string) int{
+	re, _ := regexp.Compile(`\d+`)
+	sum := 0
 	for _, machine := range strings.Split(input, "\n\n") {
-		a := struct     {x, y int}{x: 0, y: 0}
-		b := struct     {x, y int}{x: 0, y: 0}
-		prize := struct {x, y int}{x: 0, y: 0}
 
 		lines := strings.Split(machine, "\n")
 
-		as := r.FindAllString(lines[0], -1)
-		a.x, _ = strconv.Atoi(as[0])
-		a.y, _ = strconv.Atoi(as[1])
+		a   := re.FindAllString(lines[0], -1)
+		b   := re.FindAllString(lines[1], -1)
+		ans := re.FindAllString(lines[2], -1)
 
-		bs := r.FindAllString(lines[1], -1)
-		b.x, _ = strconv.Atoi(bs[0])
-		b.y, _ = strconv.Atoi(bs[1])
+		x := equation{}
+		y := equation{}
+	
+		x.a, _ = strconv.Atoi(a[0]); x.b, _ = strconv.Atoi(b[0]); x.ans, _ = strconv.Atoi(ans[0])
+		y.a, _ = strconv.Atoi(a[1]); y.b, _ = strconv.Atoi(b[1]); y.ans, _ = strconv.Atoi(ans[1])
 
-		ps := r.FindAllString(lines[2], -1)
-		prize.x, _ = strconv.Atoi(ps[0])
-		prize.y, _ = strconv.Atoi(ps[1])
-
-		tmpX := a.x
-		tmpY := a.y
-
-		a.x *= tmpY
-		b.x *= tmpY
-		prize.x *= tmpY
-
-		a.y *= tmpX
-		b.y *= tmpX
-		prize.y *= tmpX
-		
-		a.y -= a.x
-		b.y -= b.x
-		prize.y -= prize.x
-
-		if prize.y % b.y != 0 { continue }
-		prize.y /= b.y
-		b.y = 1
-
-		prize.x -= (b.x * prize.y)
-		b.x = 0
-		
-		if prize.x % a.x != 0 { continue }
-		prize.x /= a.x
-
-		sum += prize.x * 3 + prize.y
-		// fmt.Printf( "%d %d\n", A, B)
+		A, B := solve(x, y)
+		sum += A * 3 + B
 	}
 	return sum
 }
 
 func partTwo(input string) int{
-	r, _ := regexp.Compile(`\d+`)
+	re, _ := regexp.Compile(`\d+`)
 	sum := 0
-
-	
 	for _, machine := range strings.Split(input, "\n\n") {
-		a := struct     {x, y int}{x: 0, y: 0}
-		b := struct     {x, y int}{x: 0, y: 0}
-		prize := struct {x, y int}{x: 0, y: 0}
 
 		lines := strings.Split(machine, "\n")
 
-		as := r.FindAllString(lines[0], -1)
-		a.x, _ = strconv.Atoi(as[0])
-		a.y, _ = strconv.Atoi(as[1])
+		a   := re.FindAllString(lines[0], -1)
+		b   := re.FindAllString(lines[1], -1)
+		ans := re.FindAllString(lines[2], -1)
 
-		bs := r.FindAllString(lines[1], -1)
-		b.x, _ = strconv.Atoi(bs[0])
-		b.y, _ = strconv.Atoi(bs[1])
-
-		ps := r.FindAllString(lines[2], -1)
-		prize.x, _ = strconv.Atoi(ps[0])
-		prize.x += 10000000000000
-		prize.y, _ = strconv.Atoi(ps[1])
-		prize.y += 10000000000000
-
-		tmpX := a.x
-		tmpY := a.y
-
-		a.x *= tmpY
-		b.x *= tmpY
-		prize.x *= tmpY
-
-		a.y *= tmpX
-		b.y *= tmpX
-		prize.y *= tmpX
+		x := equation{}
+		y := equation{}
+	
+		x.a, _ = strconv.Atoi(a[0]); x.b, _ = strconv.Atoi(b[0]); x.ans, _ = strconv.Atoi(ans[0])
+		y.a, _ = strconv.Atoi(a[1]); y.b, _ = strconv.Atoi(b[1]); y.ans, _ = strconv.Atoi(ans[1])
 		
-		a.y -= a.x
-		b.y -= b.x
-		prize.y -= prize.x
+		x.ans += 10000000000000; y.ans += 10000000000000
 
-		if prize.y % b.y != 0 { continue }
-		prize.y /= b.y
-		b.y = 1
-
-		prize.x -= (b.x * prize.y)
-		b.x = 0
-		
-		if prize.x % a.x != 0 { continue }
-		prize.x /= a.x
-
-		sum += prize.x * 3 + prize.y
-		// fmt.Printf( "%d %d\n", A, B)
+		A, B := solve(x, y)
+		sum += A * 3 + B
 	}
 	return sum
+}
+
+
+func solve(x, y equation) (a, b int) {
+
+	tmpX := x.a
+	tmpY := y.a
+
+	x.a *= tmpY; x.b *= tmpY; x.ans *= tmpY
+	y.a *= tmpX; y.b *= tmpX; y.ans *= tmpX
+
+	y.a -= x.a; y.b -= x.b; y.ans -= x.ans
+
+
+	if y.ans % y.b != 0 {
+		return 0, 0
+	}
+	y.ans /= y.b
+	x.ans -= (x.b * y.ans)
+
+	if x.ans % x.a != 0 {
+		return 0, 0
+	}
+	x.ans /= x.a
+	return x.ans, y.ans
 }
