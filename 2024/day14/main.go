@@ -95,21 +95,21 @@ func partTwo(input string) {
 		}
 
 		score := 0
-		for row := 1; row < 102; row++ {
-			for col := 1; col < 100; col++ {
+		for row := 0; row < 102; row += 2 {
+			for col := 0; col < 100; col += 2 {
 
 				sum := 0
-				for a := -1; a <= 1; a++ {
-					for b := -1; b <= 1; b++ {
+				for a := 0; a <= 1; a++ {
+					for b := 0; b <= 1; b++ {
 
 						if matrix[row + a][col + b] == 'X' { sum++ }
 					}
 				}
-				if sum == 9 { score++ }
+				if sum == 4 { score++ }
 			}
 		}
  
-		if  score > 3 {
+		if  score > 10 {
 			fmt.Printf("%d\n",i)
 			for row := 0; row < 103; row++ {
 				for col := 0; col < 101; col++ {
@@ -118,6 +118,7 @@ func partTwo(input string) {
 				fmt.Printf("\n")
 			}
 			fmt.Printf("\n")
+			break
 		}
 	}
 
