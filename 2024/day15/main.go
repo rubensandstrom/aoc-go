@@ -55,8 +55,6 @@ func partOne(warehouse [][]byte, movements []byte) int{
 		}
 	}
 
-
-	// dir := struct {x, y int}{}
 	OUTER:
 	for _, c := range movements {
 		switch c {
@@ -112,8 +110,6 @@ func partOne(warehouse [][]byte, movements []byte) int{
 			warehouse[robot.y][robot.x] = '.'
 			robot.y--
 		}
-
-
 		}
 	}
 
@@ -142,8 +138,6 @@ func partTwo(warehouse [][]byte, movements []byte) int{
 		}
 	}
 
-
-	// dir := struct {x, y int}{}
 	OUTER:
 	for _, c := range movements {
 
@@ -176,81 +170,47 @@ func partTwo(warehouse [][]byte, movements []byte) int{
 		}
 
 		case 'v': {
+			toMove := []pos{}
+			allowed := false
 			switch warehouse[robot.y + 1][robot.x] {
+			case '#': continue OUTER
 			case '[': {
-				toMove, allowed := pushDown(robot.x, robot.y + 1, warehouse)
-				if allowed {
-					for _, box := range toMove {
-						warehouse[box.y][box.x] = '.'
-						warehouse[box.y][box.x + 1] = '.'
-					}
-					for _, box := range toMove {
-						warehouse[box.y + 1][box.x] = '['
-						warehouse[box.y + 1][box.x + 1] = ']'
-					}
-					warehouse[robot.y + 1][robot.x] = '@'
-					warehouse[robot.y][robot.x] = '.'
-					robot.y++
-				}
+				toMove, allowed = pushDown(robot.x, robot.y + 1, warehouse)
 			}
 			case ']': {
-				toMove, allowed := pushDown(robot.x - 1, robot.y + 1, warehouse)
-				if allowed {
-					for _, box := range toMove {
-						warehouse[box.y][box.x] = '.'
-						warehouse[box.y][box.x + 1] = '.'
-					}
-					for _, box := range toMove {
-						warehouse[box.y + 1][box.x] = '['
-						warehouse[box.y + 1][box.x + 1] = ']'
-					}
-					warehouse[robot.y + 1][robot.x] = '@'
-					warehouse[robot.y][robot.x] = '.'
-					robot.y++
-				}
+				toMove, allowed = pushDown(robot.x - 1, robot.y + 1, warehouse)
 			}
-			case '#': continue OUTER
 			case '.': {
 				warehouse[robot.y][robot.x] = '.'
 				warehouse[robot.y + 1][robot.x] = '@'
 				robot.y++
 			}
 			}
+
+			if allowed {
+				for _, box := range toMove {
+					warehouse[box.y][box.x] = '.'
+					warehouse[box.y][box.x + 1] = '.'
+				}
+				for _, box := range toMove {
+					warehouse[box.y + 1][box.x] = '['
+					warehouse[box.y + 1][box.x + 1] = ']'
+				}
+				warehouse[robot.y + 1][robot.x] = '@'
+				warehouse[robot.y][robot.x] = '.'
+				robot.y++
+			}
 		}
 
 		case '^': {
+			toMove := []pos{}
+			allowed := false
 			switch warehouse[robot.y - 1][robot.x] {
 			case '[': {
-				toMove, allowed := pushUp(robot.x, robot.y - 1, warehouse)
-				if allowed {
-					for _, box := range toMove {
-						warehouse[box.y][box.x] = '.'
-						warehouse[box.y][box.x + 1] = '.'
-					}
-					for _, box := range toMove {
-						warehouse[box.y - 1][box.x] = '['
-						warehouse[box.y - 1][box.x + 1] = ']'
-					}
-					warehouse[robot.y - 1][robot.x] = '@'
-					warehouse[robot.y][robot.x] = '.'
-					robot.y--
-				}
+				toMove, allowed = pushUp(robot.x, robot.y - 1, warehouse)
 			}
 			case ']': {
-				toMove, allowed := pushUp(robot.x - 1, robot.y - 1, warehouse)
-				if allowed {
-					for _, box := range toMove {
-						warehouse[box.y][box.x] = '.'
-						warehouse[box.y][box.x + 1] = '.'
-					}
-					for _, box := range toMove {
-						warehouse[box.y - 1][box.x] = '['
-						warehouse[box.y - 1][box.x + 1] = ']'
-					}
-					warehouse[robot.y - 1][robot.x] = '@'
-					warehouse[robot.y][robot.x] = '.'
-					robot.y--
-				}
+				toMove, allowed = pushUp(robot.x - 1, robot.y - 1, warehouse)
 			}
 			case '#': continue OUTER
 			case '.': {
@@ -258,6 +218,19 @@ func partTwo(warehouse [][]byte, movements []byte) int{
 				warehouse[robot.y - 1][robot.x] = '@'
 				robot.y--
 			}
+			}
+			if allowed {
+				for _, box := range toMove {
+					warehouse[box.y][box.x] = '.'
+					warehouse[box.y][box.x + 1] = '.'
+				}
+				for _, box := range toMove {
+					warehouse[box.y - 1][box.x] = '['
+					warehouse[box.y - 1][box.x + 1] = ']'
+				}
+				warehouse[robot.y - 1][robot.x] = '@'
+				warehouse[robot.y][robot.x] = '.'
+				robot.y--
 			}
 		}
 		}
