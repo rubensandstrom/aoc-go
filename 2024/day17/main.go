@@ -18,7 +18,7 @@ func main() {
     }
     input := string(inputFile[:len(inputFile)-1])
 
-    fmt.Printf("Part one: %v\n", partOne(input))
+    fmt.Printf("Part one: %s\n", partOne(input))
     fmt.Printf("Part two: %d\n", partTwo(input))
 }
 
@@ -81,7 +81,7 @@ func execute (A, B, C int, prog []int) (out []int) {
 	return out
 }
 
-func partOne(input string) []int {
+func partOne(input string) string {
 
 	r, _ := regexp.Compile(`\d+`)
 
@@ -98,7 +98,15 @@ func partOne(input string) []int {
 	B, _ := strconv.Atoi(regs[1])
 	C, _ := strconv.Atoi(regs[2])
 
-	return execute(A, B, C, prog)
+	out := execute(A, B, C, prog)
+	outStr := strings.Builder{}
+
+	for _, o := range out {
+		tmp := strconv.Itoa(o)
+		outStr.WriteString(tmp)
+		outStr.WriteRune(',')
+	}
+	return outStr.String()[:outStr.Len() - 1]
 }
 
 func partTwo(input string) int{
